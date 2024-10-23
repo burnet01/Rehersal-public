@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rehearsal Dinner Photo Upload</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap'); /* Add fancy font */
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            height: auto;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive; /* Apply fancy font */
+            color: #333;
+            font-size: 48px; /* Increase font size for elegance */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .upload-section {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .upload-card {
+            background: linear-gradient(135deg, #5a94ff, #60cfff);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            width: 200px;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-card:hover {
+            transform: scale(1.05);
+        }
+
+        .upload-card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .upload-card h2 {
+            font-size: 18px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .upload-card p {
+            font-size: 12px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .upload-card input[type="file"] {
+            display: none;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #d9534f;
+            text-align: center;
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .image-gallery img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            margin: 5px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 400px;
+            height: 400px;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .arrow {
+            cursor: pointer;
+            color: white;
+            font-size: 48px;
+            position: absolute;
+            bottom: 60px;
+            transform: translateY(50%);
+            z-index: 10;
+            user-select: none;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+        }
+
+        .left-arrow {
+            left: 10px;
+        }
+
+        .right-arrow {
+            right: 10px;
+        }
+
+        .arrow:hover {
+            color: #ddd;
+        }
+
+        .modal-button {
+            margin-top: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            width: auto;
+            font-size: 14px;
+        }
+
+        .modal-close {
+            background-color: #d9534f;
+        }
+
+        .modal-close:hover {
+            background-color: #c9302c;
+        }
+
+        /* Responsive design adjustments */
+        @media (max-width: 600px) {
+            .upload-card {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 40px; /* Adjust font size for mobile */
+            }
+
+            button, input[type="file"], .modal-button {
+                padding: 15px;
+                font-size: 16px;
+            }
+
+            .image-gallery img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .arrow {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Rehearsal Dinner</h1> <!-- Updated title -->
+
+    <!-- Single Upload Button Section -->
+    <form id="uploadForm" enctype="multipart/form-data" method="POST">
+        <div class="upload-section">
+            <div class="upload-card" id="uploadTrigger">
+                <img src="images/upload-icon.png" alt="Upload Icon">
+                <h2>Upload</h2>
+                <p>Submit your image files.</p>
+                <input type="file" name="image" id="imageUpload" multiple>
+            </div>
+        </div>
+    
+        <!-- Image Preview Section -->
+        <div id="previewContainer" class="image-gallery"></div> <!-- This will show image previews -->
+    
+        <!-- Message display for errors -->
+        <div class="message" id="message"></div>
+    
+        <button type="button" id="uploadButton" class="modal-button">Submit</button>
+    </form>
+    
+    
+
+    <div class="message" id="message"></div>
+    <div class="image-gallery" id="imageGallery"></div>
+
+    <div id="imageModal" class="modal">
+        <span class="close" id="closeModal" style="color: white; float: right; font-size: 28px; font-weight: bold;">&times;</span>
+        <span class="arrow left-arrow" id="prevImage">&#10094;</span>
+        <img class="modal-content" id="modalImage" />
+        <span class="arrow right-arrow" id="nextImage">&#10095;</span>
+        <div id="modalButtons">
+            <a id="downloadButton" class="modal-button" href="#" download>Download Image</a>
+            <button class="modal-button modal-close" id="closeModalBtn">Close</button>
+        </div>
+    </div>
+
+    <div style="margin: 20px;">
+        <button id="downloadAllBtn" class="modal-button">Download All Images</button>
+    </div>
+
+    <script>
+        const imageGallery = document.getElementById('imageGallery');
+        const messageDiv = document.getElementById('message');
+        const previewContainer = document.getElementById('previewContainer');
+        let currentImageIndex = 0;
+        let imageFiles = [];
+
+        // Add event listener for "Download All" button
+        document.getElementById('downloadAllBtn').addEventListener('click', function() {
+        window.location.href = '/download-all'; // Trigger ZIP file download
+        });
+
+        // Trigger file input when clicking the image icon
+        const uploadTrigger = document.getElementById('uploadTrigger');
+        const imageInput = document.getElementById('imageUpload');
+
+        uploadTrigger.addEventListener('click', () => {
+            imageInput.click(); // Trigger file input click
+        });
+
+        imageInput.addEventListener('change', function() {
+            const formData = new FormData();
+            for (const file of imageInput.files) {
+                formData.append('image', file); // Append multiple files to form data
+            }
+
+            messageDiv.textContent = '';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+                return response.json();
+            })
+            .then(data => {
+                messageDiv.textContent = data.message;
+                messageDiv.style.color = 'green';
+
+                // Display uploaded images
+                data.files.forEach(file => {
+                    addImageToGallery(file);
+                });
+
+                // Fetch all images to update the gallery
+                fetchAllImages();
+            })
+            .catch(error => {
+                messageDiv.textContent = error.message;
+                messageDiv.style.color = 'red';
+            });
+        });
+
+        function addImageToGallery(file) {
+            const existingImages = Array.from(imageGallery.getElementsByTagName('img')).map(img => img.src);
+            if (!existingImages.includes(file)) {
+                const img = document.createElement('img');
+                img.src = file;
+                img.alt = 'Uploaded Image';
+                img.onclick = () => openModal(file);
+                imageGallery.appendChild(img);
+                imageFiles.push(file); // Add to the list of images
+            }
+        }
+
+        function fetchAllImages() {
+            fetch('/images')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch images');
+                    }
+                    return response.json();
+                })
+                .then(images => {
+                    imageGallery.innerHTML = ''; // Clear gallery
+                    images.forEach(file => {
+                        addImageToGallery(file);
+                    });
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+        window.onload = function() {
+            fetchAllImages(); // Fetch all images when the page loads
+        };
+
+        function openModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const downloadButton = document.getElementById('downloadButton');
+
+            modal.style.display = "block";
+            modalImage.src = imageSrc;
+            downloadButton.href = imageSrc;
+
+            currentImageIndex = imageFiles.indexOf(imageSrc);
+            updateModalImage();
+        }
+
+        function updateModalImage() {
+            const modalImage = document.getElementById('modalImage');
+            const downloadButton = document.getElementById('downloadButton');
+            modalImage.src = imageFiles[currentImageIndex];
+            downloadButton.href = imageFiles[currentImageIndex];
+        }
+
+        document.getElementById('prevImage').onclick = function() {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                updateModalImage();
+            }
+        };
+
+        document.getElementById('nextImage').onclick = function() {
+            if (currentImageIndex < imageFiles.length - 1) {
+                currentImageIndex++;
+                updateModalImage();
+            }
+        };
+
+        document.getElementById('closeModal').onclick = function() {
+            document.getElementById('imageModal').style.display = "none";
+        };
+
+        document.getElementById('closeModalBtn').onclick = function() {
+            document.getElementById('imageModal').style.display = "none";
+        };
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        const modal = document.getElementById('imageModal');
+
+        modal.addEventListener('touchstart', (event) => {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+
+        modal.addEventListener('touchend', (event) => {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX) {
+                if (currentImageIndex < imageFiles.length - 1) {
+                    currentImageIndex++;
+                    updateModalImage();
+                }
+            }
+
+            if (touchEndX > touchStartX) {
+                if (currentImageIndex > 0) {
+                    currentImageIndex--;
+                    updateModalImage();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
