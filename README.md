@@ -16,3 +16,5 @@ It could also be more cost effective to make it go to a dedicated server with a 
 - then type the command npm run app.js 
 
 It should be this easy to run the app. However, I am not sure as technologies do change, and dependencies this project were running on are from +- 2023 and likely have vulnerabilities now or had them before as well. 
+
+#### It should also be noted that this was NEVER put into production as I stopped this project to focus more on real life events.
