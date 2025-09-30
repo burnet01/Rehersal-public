@@ -5,7 +5,7 @@ This was a very easy and rushed build for a wedding rehersal (or wedding picture
 The idea was to have them all locally upload- in a realworld example, you want the user to upload to a S3 bucket instead. 
 It could also be more cost effective to make it go to a dedicated server with a lot of storage as well instead of S3.
 
-# THIS PROJECT WAS MADE FOR A FRIEND AND SHOULD PROBLABLY NEVER BE PUT INTO PRODUCTION WITHOUT TWEAKS!
+# THIS PROJECT WAS MADE FOR A FRIEND AND SHOULD probably NEVER BE PUT INTO PRODUCTION WITHOUT TWEAKS!
 
 # I will not be providing support!
 
